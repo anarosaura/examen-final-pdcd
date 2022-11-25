@@ -1,16 +1,16 @@
-FROM python:3.9-slim
+FROM python:3.9-slim-buster
 
 WORKDIR /code
 
-COPY ./requirements.txt /code/requirements.txt
-
 RUN apt-get update && apt-get install -y procps && pip install -U pip \
-    && rm /etc/localtime \
+    && rm /etc/localtime  \
     && ln -s /usr/share/zoneinfo/America/Mexico_City /etc/localtime
+
+COPY ./requirements.txt /code/requirements.txt
 
 RUN pip install -r ./requirements.txt
 
-COPY  ./model/funded_logmodel.sav /code/
+COPY  ./funded_logmodel.sav /code/
 
 COPY ./main.py /code/main.py
 

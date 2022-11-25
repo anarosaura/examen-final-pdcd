@@ -34,17 +34,20 @@ class Funded(BaseModel):
 
 
 @app.on_event("startup")
-def load_matrix():
+def load_model():
     global model_funded
-    with open("../model/funded_logmodel.sav", "rb") as openfile:
+    global tfidf
+    with open("/Users/rosaura/Desktop/examen-final-pdcd/app/backend/funded_logmodel.sav", "rb") as openfile:
         model_funded = pickle.load(openfile)
+    with open("/Users/rosaura/Desktop/examen-final-pdcd/app/backend/tfidf_model.sav", "rb") as tfidf_file:
+        tfidf = pickle.load(tfidf_file)
 
 
-@app.get("/api/v1/recommend")
+@app.get("/api/v1/classify")
 def classify_funded(funded: Funded, api_key: APIKey = Depends(get_api_key)):
-    params = [[funded.description]]
-    text = "Our project is amazing compared to other projects because our team has the best people on Earth, you should definitely fund us"
+    text = funded.description
     text_tfidf = tfidf.transform([text]).toarray()
+    pred = model_funded.predict(text_tfidf)
 
     dict_funded = {0: "Not Funded",
                    1: "Funded"}
